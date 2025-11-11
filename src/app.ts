@@ -7,7 +7,9 @@ import { errorHandler } from './middlewares/errorHandler';
 import { notFoundHandler } from './middlewares/notFoundHandler';
 import { AppError } from './utils/appError';
 import authRoutes from './modules/auth/auth.routes';
+import cartRoutes from './modules/cart/cart.routes';
 import categoryRoutes from './modules/categories/category.routes';
+import orderRoutes from './modules/orders/order.routes';
 import productRoutes from './modules/products/product.routes';
 
 const app = express();
@@ -35,6 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({
