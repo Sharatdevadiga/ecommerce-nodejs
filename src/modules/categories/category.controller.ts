@@ -22,10 +22,15 @@ export const handleListCategories: RequestHandler = async (req, res, next) => {
     const page = Number(req.query.page);
     const pageSize = Number(req.query.pageSize);
 
-    const result = await listCategories({
-      page: Number.isNaN(page) ? undefined : page,
-      pageSize: Number.isNaN(pageSize) ? undefined : pageSize,
-    });
+    const query: { page?: number; pageSize?: number } = {};
+    if (!Number.isNaN(page)) {
+      query.page = page;
+    }
+    if (!Number.isNaN(pageSize)) {
+      query.pageSize = pageSize;
+    }
+
+    const result = await listCategories(query);
 
     return res.json(result);
   } catch (error) {
@@ -35,7 +40,11 @@ export const handleListCategories: RequestHandler = async (req, res, next) => {
 
 export const handleGetCategory: RequestHandler = async (req, res, next) => {
   try {
-    const category = await getCategoryById(req.params.id);
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: 'Category ID is required' });
+    }
+    const category = await getCategoryById(id);
     return res.json(category);
   } catch (error) {
     return next(error);
@@ -44,7 +53,11 @@ export const handleGetCategory: RequestHandler = async (req, res, next) => {
 
 export const handleUpdateCategory: RequestHandler = async (req, res, next) => {
   try {
-    const category = await updateCategory(req.params.id, req.body);
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: 'Category ID is required' });
+    }
+    const category = await updateCategory(id, req.body);
     return res.json(category);
   } catch (error) {
     return next(error);
@@ -53,7 +66,11 @@ export const handleUpdateCategory: RequestHandler = async (req, res, next) => {
 
 export const handleDeleteCategory: RequestHandler = async (req, res, next) => {
   try {
-    await deleteCategory(req.params.id);
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: 'Category ID is required' });
+    }
+    await deleteCategory(id);
     return res.status(204).send();
   } catch (error) {
     return next(error);
