@@ -1,0 +1,251 @@
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  uptime:
+                    type: number
+                    example: 123.45
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Error message
+        statusCode:
+          type: number
+          example: 400
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [customer, admin]
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: float
+        stock:
+          type: integer
+        categoryId:
+          type: string
+          format: uuid
+        category:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+        imageUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+            totalItems:
+              type: integer
+            totalPages:
+              type: integer
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        product:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            price:
+              type: number
+            imageUrl:
+              type: string
+              nullable: true
+        quantity:
+          type: integer
+        priceAtAdd:
+          type: number
+          format: float
+
+    CartResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total:
+          type: number
+          format: float
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        product:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            imageUrl:
+              type: string
+              nullable: true
+        quantity:
+          type: integer
+        priceAtTime:
+          type: number
+          format: float
+        subtotal:
+          type: number
+          format: float
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        total:
+          type: number
+          format: float
+        status:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrderListResponse:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+            totalItems:
+              type: integer
+            totalPages:
+              type: integer
+

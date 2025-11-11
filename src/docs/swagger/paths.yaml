@@ -1,0 +1,743 @@
+paths:
+  /api/v1/auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Creates a new customer account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: Password123!
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticates a user and returns access and refresh tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: Password123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Generates new access and refresh tokens using a valid refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Tokens refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Revokes a refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '204':
+          description: Logout successful
+
+  /api/v1/categories:
+    get:
+      tags:
+        - Categories
+      summary: List all categories
+      description: Retrieves a paginated list of categories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      pageSize:
+                        type: integer
+                      totalItems:
+                        type: integer
+                      totalPages:
+                        type: integer
+    post:
+      tags:
+        - Categories
+      summary: Create a new category
+      description: Creates a new product category (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  example: Electronics
+                description:
+                  type: string
+                  example: Electronic products and devices
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      description: Retrieves a single category by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Updates an existing category (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Deletes a category (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Category deleted successfully
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/products:
+    get:
+      tags:
+        - Products
+      summary: List products with filters
+      description: Retrieves a paginated list of products with optional filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      description: Creates a new product with optional image upload (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - price
+                - stock
+                - categoryId
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                price:
+                  type: number
+                  minimum: 0
+                stock:
+                  type: integer
+                  minimum: 0
+                categoryId:
+                  type: string
+                  format: uuid
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Retrieves a single product by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Products
+      summary: Update product
+      description: Updates an existing product (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  minimum: 0
+                stock:
+                  type: integer
+                  minimum: 0
+                categoryId:
+                  type: string
+                  format: uuid
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Products
+      summary: Delete product
+      description: Deletes a product (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product deleted successfully
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/cart:
+    get:
+      tags:
+        - Shopping Cart
+      summary: Get cart items
+      description: Retrieves all items in the user's shopping cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+    post:
+      tags:
+        - Shopping Cart
+      summary: Add item to cart
+      description: Adds a product to the shopping cart with persistent pricing
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - quantity
+              properties:
+                productId:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Item added/updated in cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '201':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags:
+        - Shopping Cart
+      summary: Clear cart
+      description: Removes all items from the shopping cart
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Cart cleared successfully
+
+  /api/v1/cart/{id}:
+    patch:
+      tags:
+        - Shopping Cart
+      summary: Update cart item quantity
+      description: Updates the quantity of an item in the cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Shopping Cart
+      summary: Remove item from cart
+      description: Removes a specific item from the shopping cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Item removed successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/orders:
+    get:
+      tags:
+        - Orders
+      summary: List user orders
+      description: Retrieves a paginated list of orders for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+    post:
+      tags:
+        - Orders
+      summary: Create order from cart
+      description: Creates an order from cart items with persistent pricing
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/orders/all:
+    get:
+      tags:
+        - Orders
+      summary: List all orders (Admin)
+      description: Retrieves a paginated list of all orders (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      description: Retrieves a single order by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
