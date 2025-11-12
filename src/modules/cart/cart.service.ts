@@ -10,7 +10,7 @@ export interface CartItemDto {
     imageUrl: string | null;
   };
   quantity: number;
-  priceAtTime: number;
+  priceAtAdd: number; // Price when item was added to cart
   subtotal: number;
 }
 
@@ -81,7 +81,7 @@ export const addToCart = async (
       imageUrl: productData.imageUrl ?? null,
     },
     quantity: updated.quantity,
-    priceAtTime: Number(updated.priceAtTime),
+    priceAtAdd: Number(updated.priceAtTime),
     subtotal: Number(updated.priceAtTime) * updated.quantity,
   };
 };
@@ -110,7 +110,7 @@ export const getCart = async (userId: string): Promise<CartDto> => {
         imageUrl: productData.imageUrl ?? null,
       },
       quantity: item.quantity,
-      priceAtTime: Number(item.priceAtTime),
+      priceAtAdd: Number(item.priceAtTime),
       subtotal: Number(item.priceAtTime) * item.quantity,
     };
   });
@@ -185,7 +185,7 @@ export const updateCartItem = async (
       imageUrl: updatedProductData.imageUrl ?? null,
     },
     quantity: updated.quantity,
-    priceAtTime: Number(updated.priceAtTime),
+    priceAtAdd: Number(updated.priceAtTime),
     subtotal: Number(updated.priceAtTime) * updated.quantity,
   };
 };

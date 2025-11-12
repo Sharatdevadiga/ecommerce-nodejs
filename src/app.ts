@@ -11,6 +11,7 @@ import cartRoutes from './modules/cart/cart.routes';
 import categoryRoutes from './modules/categories/category.routes';
 import orderRoutes from './modules/orders/order.routes';
 import productRoutes from './modules/products/product.routes';
+import { setupSwagger } from './docs/swagger/swagger.config';
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+setupSwagger(app);
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/categories', categoryRoutes);

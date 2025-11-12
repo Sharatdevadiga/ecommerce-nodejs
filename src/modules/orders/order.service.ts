@@ -104,7 +104,7 @@ export const createOrder = async (userId: string): Promise<OrderDto> => {
             orderId: order.id,
             productId: item.productId,
             quantity: item.quantity,
-            priceAtTime: item.priceAtTime, // Use price from cart (persistent)
+            priceAtTime: item.priceAtAdd, // Use price from cart (persistent)
           },
           { transaction },
         ),
