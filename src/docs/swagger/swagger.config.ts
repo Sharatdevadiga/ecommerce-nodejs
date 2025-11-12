@@ -17,6 +17,10 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
+        url: 'https://ecommerce-nodejs-hdsd.onrender.com',
+        description: 'Production server',
+      },
+      {
         url: `http://localhost:${env.port}`,
         description: 'Development server',
       },
