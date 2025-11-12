@@ -31,8 +31,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '409':
           $ref: '#/components/responses/Conflict'
 
@@ -96,10 +96,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
+                  tokens:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      refreshToken:
+                        type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -131,8 +134,7 @@ paths:
         - Categories
       summary: List all categories
       description: Retrieves a paginated list of categories
-      security:
-        - bearerAuth: []
+      security: []
       parameters:
         - name: page
           in: query
@@ -153,23 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  categories:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Category'
-                  pagination:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      pageSize:
-                        type: integer
-                      totalItems:
-                        type: integer
-                      totalPages:
-                        type: integer
+                $ref: '#/components/schemas/CategoryListResponse'
     post:
       tags:
         - Categories
@@ -200,8 +186,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '403':
           $ref: '#/components/responses/Forbidden'
 
@@ -211,8 +197,7 @@ paths:
         - Categories
       summary: Get category by ID
       description: Retrieves a single category by its ID
-      security:
-        - bearerAuth: []
+      security: []
       parameters:
         - name: id
           in: path
@@ -262,8 +247,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -296,8 +281,7 @@ paths:
         - Products
       summary: List products with filters
       description: Retrieves a paginated list of products with optional filters
-      security:
-        - bearerAuth: []
+      security: []
       parameters:
         - name: page
           in: query
@@ -381,8 +365,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '403':
           $ref: '#/components/responses/Forbidden'
 
@@ -392,8 +376,7 @@ paths:
         - Products
       summary: Get product by ID
       description: Retrieves a single product by its ID
-      security:
-        - bearerAuth: []
+      security: []
       parameters:
         - name: id
           in: path
@@ -453,8 +436,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -532,8 +515,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CartItem'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
     delete:
       tags:
         - Shopping Cart
@@ -579,8 +562,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CartItem'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
@@ -646,8 +629,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
 
   /api/v1/orders/all:
     get:
@@ -716,6 +699,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Validation failed
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: string
     Unauthorized:
       description: Unauthorized
       content:

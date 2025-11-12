@@ -56,10 +56,13 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/User'
-        accessToken:
-          type: string
-        refreshToken:
-          type: string
+        tokens:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
 
     Category:
       type: object
@@ -120,18 +123,18 @@ components:
     ProductListResponse:
       type: object
       properties:
-        products:
+        data:
           type: array
           items:
             $ref: '#/components/schemas/Product'
-        pagination:
+        meta:
           type: object
           properties:
+            totalItems:
+              type: integer
             page:
               type: integer
             pageSize:
-              type: integer
-            totalItems:
               type: integer
             totalPages:
               type: integer
@@ -171,7 +174,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CartItem'
-        total:
+        subtotal:
           type: number
           format: float
 
@@ -233,18 +236,37 @@ components:
     OrderListResponse:
       type: object
       properties:
-        orders:
+        data:
           type: array
           items:
             $ref: '#/components/schemas/Order'
-        pagination:
+        meta:
           type: object
           properties:
+            totalItems:
+              type: integer
             page:
               type: integer
             pageSize:
               type: integer
+            totalPages:
+              type: integer
+    
+    CategoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        meta:
+          type: object
+          properties:
             totalItems:
+              type: integer
+            page:
+              type: integer
+            pageSize:
               type: integer
             totalPages:
               type: integer
