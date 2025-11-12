@@ -141,6 +141,18 @@ Once the server is running, access the Swagger documentation at:
 http://localhost:3000/api-docs
 ```
 
+## Deployment
+
+For detailed deployment instructions to Render (or other platforms), see:
+- **[Render Deployment Guide](docs/DEPLOYMENT.md)** - Complete step-by-step guide for deploying to Render
+
+The guide includes:
+- PostgreSQL database setup
+- Web service configuration
+- Environment variables
+- Database migrations
+- Troubleshooting common issues
+
 ## Testing
 
 Run the test suite:
